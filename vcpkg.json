@@ -1,1 +1,1 @@
-{  "name": "spotfuturearbitrage",  "dependencies": [    "fmt"  ]}
+{  "name": "spotfuturearbitrage",  "dependencies": [    "gtest"  ]}
