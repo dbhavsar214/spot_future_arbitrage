@@ -1,0 +1,47 @@
+name: Dev CI
+
+on:
+  push:
+    branches: [test]
+  pull_request:
+    branches: [test]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # 2. Checkout vcpkg (local project-level)
+      - name: Checkout vcpkg
+        uses: actions/checkout@v4
+        with:
+          repository: microsoft/vcpkg
+          path: vcpkg
+
+      # 3. Bootstrap vcpkg
+      - name: Bootstrap vcpkg
+        run: ./vcpkg/bootstrap-vcpkg.sh
+
+      # 4. Configure CMake (FAST build)
+      - name: Configure CMake
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+
+      # 5. Build
+      - name: Build
+        run: cmake --build build --parallel
+
+      # 6. Run unit tests (FAST validation only)
+      - name: Run tests
+        working-directory: build
+        run: ctest --output-on-failure
+
+        env:
+          TSAN_OPTIONS: halt_on_error=1
