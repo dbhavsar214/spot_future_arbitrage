@@ -29,8 +29,10 @@ target_link_libraries(spot_future_arbitrage)
 enable_testing()
 
 add_executable(spot_future_arbitrage_tests
-    tests/tick_handler_test.cpp
+        tests/tick_handler_test.cpp
         src/tick_handler.cpp
+        src/arbitrage_checker.cpp
+        tests/arbitrage_checker_test.cpp
 
 )
 
